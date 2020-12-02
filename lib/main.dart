@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-
       // if we used version that the same or newer than 4.0, we need to change from "builder" to "create"
       create: (ctx) => Products(),
       child: MaterialApp(
