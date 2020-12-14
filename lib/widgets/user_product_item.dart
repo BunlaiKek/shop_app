@@ -6,14 +6,16 @@ import '../providers/products.dart';
 class UserProductItem extends StatelessWidget {
   final String id;
   final String title;
+  final double price;
   final String imageUrl;
 
-  UserProductItem({this.id, this.title, this.imageUrl});
+  UserProductItem({this.id, this.title, this.price, this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(title),
+      subtitle: Text('\$$price'),
       leading: CircleAvatar(
         backgroundImage: NetworkImage(imageUrl),
       ),
