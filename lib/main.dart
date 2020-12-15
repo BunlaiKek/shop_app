@@ -6,9 +6,11 @@ import './screens/cart_screen.dart';
 import './providers/products.dart';
 import './providers/cart.dart';
 import './providers/orders.dart';
+import './providers/auth.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
+import './screens/auth_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,25 +22,33 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => Products()),
-        ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => Orders())
-      ],
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-          accentColor: Colors.deepOrange,
-          fontFamily: 'Lato',
-          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ChangeNotifierProvider.value(value: Auth()),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: null,
+          update: (ctx, auth, previousProducts) => Products(auth.token, previousProducts == null ? [] : previousProducts.items),
         ),
-        home: ProdutsOverviewScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-          CartScreen.routeName: (ctx) => CartScreen(),
-          OrdersScreen.routeName: (ctx) => OrdersScreen(),
-          UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
-          EditProductScreen.routeName: (ctx) => EditProductScreen()
+        ChangeNotifierProvider(create: (ctx) => Cart()),
+        ChangeNotifierProvider(create: (ctx) => Orders()),
+      ],
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) {
+          return MaterialApp(
+            title: 'MyShop',
+            theme: ThemeData(
+              primarySwatch: Colors.purple,
+              accentColor: Colors.deepOrange,
+              fontFamily: 'Lato',
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+            ),
+            home: auth.isAuth ? ProdutsOverviewScreen() : AuthScreen(),
+            routes: {
+              ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+              CartScreen.routeName: (ctx) => CartScreen(),
+              OrdersScreen.routeName: (ctx) => OrdersScreen(),
+              UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
+              EditProductScreen.routeName: (ctx) => EditProductScreen()
+            },
+          );
         },
       ),
     );
